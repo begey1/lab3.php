@@ -1,0 +1,38 @@
+name: PHP CI Application
+
+on:
+  push:
+    branches:
+      - main
+      - 'lab3/**'
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - name: Install Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Fix PHP code style
+        run: ./vendor/bin/pint
+
+      - name: Check PHP code style
+        run: ./vendor/bin/pint --test
+
+      - name: Run unit tests
+        run: ./vendor/bin/phpunit tests/Unit
+
